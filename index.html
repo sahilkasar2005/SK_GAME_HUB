@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Game Hub | Premium Gaming Experience</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #0f1724;
+			--bg-light: #1e293b;
+			--accent: #06b6d4;
+			--accent-hover: #22d3ee;
+			--text: #e6eef6;
+			--text-secondary: #94a3b8;
+			--card-bg: rgba(30, 41, 59, 0.7);
+			--card-border: rgba(255, 255, 255, 0.08);
+			--header-bg: rgba(15, 23, 36, 0.85);
+			--gradient: linear-gradient(135deg, #0f1724 0%, #1e293b 100%);
+			--shadow: 0 10px 25px rgba(2, 6, 23, 0.5);
+			--shadow-hover: 0 15px 35px rgba(2, 6, 23, 0.7);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			scroll-behavior: smooth;
+		}
+
+		body {
+			margin: 0;
+			font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			background: var(--gradient);
+			color: var(--text);
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			padding: 0;
+			line-height: 1.6;
+		}
+
+		.container {
+			max-width: 1200px;
+			width: 100%;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		/* Site header */
+		.site-header {
+			position: fixed;
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 70px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 24px;
+			background: var(--header-bg);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			z-index: 1000;
+			border-bottom: 1px solid var(--card-border);
+			transition: all 0.3s ease;
+		}
+
+		.site-header.scrolled {
+			height: 60px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+		}
+
+		.site-header .logo {
+			font-weight: 700;
+			font-size: 1.4rem;
+			color: var(--text);
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.site-header .logo span {
+			color: var(--accent);
+		}
+
+		.site-header .nav {
+			display: flex;
+			gap: 20px;
+			align-items: center;
+		}
+
+		.site-header .nav-link {
+			color: var(--text-secondary);
+			background: transparent;
+			padding: 8px 16px;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 500;
+			transition: all 0.2s ease;
+		}
+
+		.site-header .nav-link:hover, 
+		.site-header .nav-link.active {
+			color: var(--text);
+			background: rgba(255, 255, 255, 0.05);
+		}
+
+		.site-header .nav-link.active {
+			color: var(--accent);
+		}
+
+		.hero {
+			padding: 120px 0 80px;
+			text-align: center;
+			background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(30, 41, 59, 0.3) 100%);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.hero::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: radial-gradient(circle at 30% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+			z-index: -1;
+		}
+
+		.hero h1 {
+			font-size: 3.5rem;
+			font-weight: 700;
+			margin: 0 0 16px;
+			background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.hero p {
+			font-size: 1.2rem;
+			color: var(--text-secondary);
+			max-width: 600px;
+			margin: 0 auto 32px;
+			line-height: 1.7;
+		}
+
+		.main-content {
+			padding: 60px 0;
+			flex: 1;
+		}
+
+		.section-title {
+			font-size: 2rem;
+			font-weight: 600;
+			margin-bottom: 40px;
+			position: relative;
+			display: inline-block;
+		}
+
+		.section-title::after {
+			content: '';
+			position: absolute;
+			bottom: -8px;
+			left: 0;
+			width: 60px;
+			height: 3px;
+			background: var(--accent);
+			border-radius: 2px;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 24px;
+			margin-top: 20px;
+		}
+
+		.card {
+			background: var(--card-bg);
+			border-radius: 16px;
+			padding: 24px;
+			border: 1px solid var(--card-border);
+			box-shadow: var(--shadow);
+			transition: all 0.3s ease;
+			cursor: pointer;
+			position: relative;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 4px;
+			background: var(--accent);
+			transform: scaleX(0);
+			transition: transform 0.3s ease;
+		}
+
+		.card:hover {
+			transform: translateY(-8px);
+			box-shadow: var(--shadow-hover);
+			border-color: rgba(6, 182, 212, 0.2);
+		}
+
+		.card:hover::before {
+			transform: scaleX(1);
+		}
+
+		.card .icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 54px;
+			height: 54px;
+			border-radius: 12px;
+			margin-bottom: 16px;
+			background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+			border: 1px solid rgba(6, 182, 212, 0.1);
+		}
+
+		.card .meta {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+		}
+
+		.card:focus {
+			outline: 2px solid rgba(6, 182, 212, 0.4);
+			outline-offset: 4px;
+		}
+
+		.card h2 {
+			margin: 0 0 12px;
+			font-size: 1.4rem;
+			font-weight: 600;
+		}
+
+		.card a {
+			color: var(--text);
+			text-decoration: none;
+		}
+
+		.card p {
+			color: var(--text-secondary);
+			margin: 0 0 20px;
+			flex: 1;
+		}
+
+		.play-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: auto;
+			padding: 12px 20px;
+			border-radius: 10px;
+			background: var(--accent);
+			color: #042028;
+			font-weight: 600;
+			text-decoration: none;
+			transition: all 0.2s ease;
+			gap: 8px;
+		}
+
+		.play-btn:hover {
+			background: var(--accent-hover);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 15px rgba(6, 182, 212, 0.3);
+		}
+
+		.small {
+			color: var(--text-secondary);
+			font-size: 0.9rem;
+			margin-top: 8px;
+		}
+
+		code {
+			background: rgba(255, 255, 255, 0.05);
+			padding: 4px 8px;
+			border-radius: 6px;
+			font-family: 'Courier New', monospace;
+			font-size: 0.85rem;
+			color: var(--accent);
+		}
+
+		.game-categories {
+			margin-bottom: 60px;
+		}
+
+		.category-tabs {
+			display: flex;
+			gap: 12px;
+			margin-bottom: 30px;
+			flex-wrap: wrap;
+		}
+
+		.category-tab {
+			padding: 10px 20px;
+			border-radius: 30px;
+			background: rgba(255, 255, 255, 0.05);
+			color: var(--text-secondary);
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			border: 1px solid transparent;
+		}
+
+		.category-tab:hover {
+			background: rgba(255, 255, 255, 0.08);
+			color: var(--text);
+		}
+
+		.category-tab.active {
+			background: rgba(6, 182, 212, 0.15);
+			color: var(--accent);
+			border-color: rgba(6, 182, 212, 0.3);
+		}
+
+		.footer {
+			background: rgba(15, 23, 36, 0.8);
+			padding: 40px 0;
+			margin-top: 60px;
+			border-top: 1px solid var(--card-border);
+		}
+
+		.footer-content {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+
+		.footer-logo {
+			font-weight: 700;
+			font-size: 1.3rem;
+			color: var(--text);
+		}
+
+		.footer-links {
+			display: flex;
+			gap: 20px;
+		}
+
+		.footer-link {
+			color: var(--text-secondary);
+			text-decoration: none;
+			transition: color 0.2s ease;
+		}
+
+		.footer-link:hover {
+			color: var(--accent);
+		}
+
+		.footer-copyright {
+			color: var(--text-secondary);
+			font-size: 0.9rem;
+			width: 100%;
+			text-align: center;
+			margin-top: 20px;
+		}
+
+		/* Responsive styles */
+		@media (max-width: 768px) {
+			.hero h1 {
+				font-size: 2.5rem;
+			}
+			
+			.hero p {
+				font-size: 1.1rem;
+			}
+			
+			.grid {
+				grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			}
+			
+			.site-header .nav {
+				display: none;
+			}
+			
+			.footer-content {
+				flex-direction: column;
+				text-align: center;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.hero h1 {
+				font-size: 2rem;
+			}
+			
+			.grid {
+				grid-template-columns: 1fr;
+			}
+			
+			.card {
+				padding: 20px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header class="site-header" role="banner">
+		<a href="#" class="logo">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#06b6d4" stroke-width="2"/>
+				<path d="M7.5 4.21l4.5 2.6 4.5-2.6M7.5 19.79V14.6L3 12M21 12l-4.5 2.6v5.19M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+			Game<span>Hub</span>
+		</a>
+		<nav class="nav" role="navigation">
+			<a href="#" class="nav-link active">Home</a>
+			<a href="#" class="nav-link">Games</a>
+			<a href="#" class="nav-link">Categories</a>
+			<a href="#" class="nav-link">About</a>
+		</nav>
+	</header>
+
+	<section class="hero" role="banner" aria-labelledby="home-title">
+		<div class="container">
+			<h1 id="home-title">Premium Gaming Experience</h1>
+			<p>Discover and play our curated collection of high-quality games. From action-packed adventures to mind-bending puzzles, we have something for every gamer.</p>
+		</div>
+	</section>
+
+	<main class="main-content" role="main">
+		<div class="container">
+			<section class="game-categories" aria-labelledby="categories-title">
+				<h2 id="categories-title" class="section-title">Browse Games</h2>
+				<div class="category-tabs" role="tablist">
+					<button class="category-tab active" role="tab" aria-selected="true">All Games</button>
+					<button class="category-tab" role="tab" aria-selected="false">Action</button>
+					<button class="category-tab" role="tab" aria-selected="false">Puzzle</button>
+					<button class="category-tab" role="tab" aria-selected="false">Adventure</button>
+					<button class="category-tab" role="tab" aria-selected="false">Strategy</button>
+				</div>
+
+				<div class="grid" aria-label="Available games">
+					<article class="card" tabindex="0" aria-labelledby="g1-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M6 12C4.895 12 4 11.105 4 10s.895-2 2-2 2 .895 2 2-.895 2-2 2zm12 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z" fill="#06b6d4"/>
+								<path d="M12 6c-2 0-4 1.5-4 3s2 3 4 3 4-1.5 4-3-2-3-4-3z" fill="#06b6d4" opacity="0.2"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g1-title"><a href="G1/G1.html">Space Adventure</a></h2>
+							<p>Embark on an intergalactic journey through unknown galaxies. Collect resources and battle alien forces.</p>
+							<a class="play-btn" href="G1/G1.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G1/G1.html</code></p>
+					</article>
+
+					<article class="card" tabindex="0" aria-labelledby="g2-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<rect x="3" y="3" width="6" height="6" rx="1" fill="#06b6d4"/>
+								<rect x="15" y="3" width="6" height="6" rx="1" fill="#06b6d4"/>
+								<rect x="3" y="15" width="6" height="6" rx="1" fill="#06b6d4"/>
+								<rect x="15" y="15" width="6" height="6" rx="1" fill="#06b6d4"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g2-title"><a href="G2/G2.html">Block Puzzle</a></h2>
+							<p>Arrange falling blocks to complete lines and earn points. A classic puzzle game with modern twists.</p>
+							<a class="play-btn" href="G2/G2.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G2/G2.html</code></p>
+					</article>
+
+					<article class="card" tabindex="0" aria-labelledby="g3-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g3-title"><a href="G3/G3.html">Castle Defense</a></h2>
+							<p>Defend your castle from waves of enemies. Strategically place towers and upgrade your defenses.</p>
+							<a class="play-btn" href="G3/G3.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G3/G3.html</code></p>
+					</article>
+
+					<article class="card" tabindex="0" aria-labelledby="g4-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#06b6d4"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g4-title"><a href="G4/G4.html">Star Runner</a></h2>
+							<p>Navigate through asteroid fields and collect stars in this fast-paced endless runner.</p>
+							<a class="play-btn" href="G4/G4.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G4/G4.html</code></p>
+					</article>
+
+					<article class="card" tabindex="0" aria-labelledby="g5-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<circle cx="12" cy="12" r="10" stroke="#06b6d4" stroke-width="2"/>
+								<path d="M12 6v6l4 2" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g5-title"><a href="G5/G5.html">Time Challenge</a></h2>
+							<p>Solve puzzles against the clock in this thrilling time-based challenge game.</p>
+							<a class="play-btn" href="G5/G5.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G5/G5.html</code></p>
+					</article>
+
+					<article class="card" tabindex="0" aria-labelledby="g6-title">
+						<div class="icon" aria-hidden="true">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M22 6l-10 7L2 6" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+						<div class="meta">
+							<h2 id="g6-title"><a href="G6/G6.html">Memory Match</a></h2>
+							<p>Test your memory by matching pairs of cards in this classic concentration game.</p>
+							<a class="play-btn" href="G6/G6.html" role="button">
+								Play Now
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</a>
+						</div>
+						<p class="small">Located in <code>G6/G6.html</code></p>
+					</article>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<footer class="footer" role="contentinfo">
+		<div class="container">
+			<div class="footer-content">
+				<div class="footer-logo">GameHub</div>
+				<div class="footer-links">
+					<a href="#" class="footer-link">Home</a>
+					<a href="#" class="footer-link">Games</a>
+					<a href="#" class="footer-link">About</a>
+					<a href="#" class="footer-link">Contact</a>
+					<a href="#" class="footer-link">Privacy Policy</a>
+				</div>
+				<div class="footer-copyright">
+					&copy; 2023 GameHub. All rights reserved.
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		// Make the entire card clickable via keyboard (Enter/Space) and mouse
+		document.querySelectorAll('.card').forEach(card => {
+			card.addEventListener('keydown', e => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					const link = card.querySelector('a[href]');
+					if (link) link.click();
+				}
+			});
+			card.addEventListener('click', e => {
+				// if the user clicked a real link/button let default behavior occur
+				if (e.target.closest('a')) return;
+				const link = card.querySelector('a[href]');
+				if (link) link.click();
+			});
+		});
+
+		// Category tabs functionality
+		document.querySelectorAll('.category-tab').forEach(tab => {
+			tab.addEventListener('click', () => {
+				document.querySelectorAll('.category-tab').forEach(t => {
+					t.classList.remove('active');
+					t.setAttribute('aria-selected', 'false');
+				});
+				tab.classList.add('active');
+				tab.setAttribute('aria-selected', 'true');
+			});
+		});
+
+		// Header scroll effect
+		window.addEventListener('scroll', () => {
+			const header = document.querySelector('.site-header');
+			if (window.scrollY > 50) {
+				header.classList.add('scrolled');
+			} else {
+				header.classList.remove('scrolled');
+			}
+		});
+	</script>
+</body>
+</html>
