@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Fruits Catcher | Game Hub</title>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --background: #0F172A;
+            --surface: #1E293B;
+            --surface-light: #334155;
+            --text: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --border: #475569;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --glow: rgba(139, 92, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
+            z-index: -1;
+        }
+
+        .site-header {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .site-header .logo {
+            color: var(--text);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .site-header .logo:hover {
+            color: var(--primary);
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 24px;
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px var(--shadow);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        #game-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: var(--text);
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            text-align: center;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: var(--surface-light);
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+
+        .stat-box h3 {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        #score .stat-value {
+            color: var(--secondary);
+        }
+
+        #high-score .stat-value {
+            color: var(--primary);
+        }
+
+        #misses .stat-value {
+            color: var(--danger);
+        }
+
+        #game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 20px 0;
+            touch-action: none;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .fruit, .bomb, .star {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            box-shadow: 0 6px 12px var(--shadow);
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .fruit {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fruit:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--glow);
+        }
+
+        .bomb {
+            background: radial-gradient(circle at 30% 30%, #EF4444, #7F1D1D);
+            color: #fff;
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .star {
+            background: radial-gradient(circle at 30% 30%, #F59E0B, #92400E);
+            color: #fff;
+            box-shadow: 0 6px 12px rgba(245, 158, 11, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .slice {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--surface);
+            margin: 15% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px var(--shadow);
+            border: 1px solid var(--border);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            color: var(--text);
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            margin: 0;
+        }
+
+        #restart-btn {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+        }
+
+        #home-btn {
+            background: linear-gradient(135deg, var(--surface-light), var(--border));
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .stat-box {
+                padding: 10px;
+            }
+            
+            #game-area {
+                height: 400px;
+            }
+            
+            .fruit, .bomb, .star {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            #game-container {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .stat-box h3 {
+                font-size: 0.7rem;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            
+            #game-area {
+                height: 350px;
+            }
+            
+            .fruit, .bomb, .star {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        /* Touch feedback for mobile */
+        @media (hover: none) {
+            .fruit:active, .bomb:active, .star:active {
+                transform: scale(0.95);
+            }
+            
+            button:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* Performance optimizations */
+        .fruit, .bomb, .star, .slice {
+            will-change: transform, opacity;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header" role="banner">
+        <a class="logo" href="../index.html">
+            <span>🎮</span>
+            <span>Game Hub</span>
+        </a>
+    </header>
+    
+    <div id="game-container">
+        <h1>Falling Fruits Catcher</h1>
+        
+        <div class="stats-container">
+            <div class="stat-box" id="high-score">
+                <h3>🏆 HIGH SCORE</h3>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat-box" id="score">
+                <h3>⭐ SCORE</h3>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat-box" id="misses">
+                <h3>❌ MISSES</h3>
+                <div class="stat-value">0/5</div>
+            </div>
+        </div>
+        
+        <button id="start-btn">
+            <span>🎮</span>
+            <span>Start Game</span>
+        </button>
+        
+        <div id="game-area"></div>
+    </div>
+    
+    <!-- Restart Modal -->
+    <div id="restart-modal" class="modal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <p id="final-score">Final Score: 0</p>
+            <p id="emoji-message">😐 Try Again!</p>
+            <div class="modal-buttons">
+                <button id="restart-btn">
+                    <span>🔄</span>
+                    <span>Restart</span>
+                </button>
+                <button id="home-btn">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Game elements
+        const gameArea = document.getElementById('game-area');
+        const scoreEl = document.querySelector('#score .stat-value');
+        const missesEl = document.querySelector('#misses .stat-value');
+        const highScoreEl = document.querySelector('#high-score .stat-value');
+        const startBtn = document.getElementById('start-btn');
+        const restartModal = document.getElementById('restart-modal');
+        const finalScoreEl = document.getElementById('final-score');
+        const emojiMessageEl = document.getElementById('emoji-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('home-btn');
+
+        // Game state
+        let score = 0;
+        let misses = 0;
+        let gameInterval;
+        let speedInterval;
+        let items = [];
+        let highScore = localStorage.getItem('highScore') || 0;
+        let fallSpeed = 5;
+        let isGameRunning = false;
+
+        // Game items data
+        const fruitData = [
+            { emoji: '🍎', score: 2 },
+            { emoji: '🍌', score: 3 },
+            { emoji: '🍊', score: 4 },
+            { emoji: '🍇', score: 5 },
+            { emoji: '🍓', score: 6 }
+        ];
+        const bombEmoji = '💣';
+        const starEmoji = '⭐';
+        const starScore = 20;
+
+        // Milestones for star spawning
+        let starMilestones = [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000];
+        let currentMilestoneIndex = 0;
+
+        // Initialize high score display
+        highScoreEl.textContent = highScore;
+
+        // Create a new falling item
+        function createItem(type = 'random') {
+            const item = document.createElement('div');
+            const rand = Math.random();
+            
+            // Determine item type
+            if (type === 'bomb') {
+                item.classList.add('bomb');
+                item.textContent = bombEmoji;
+            } else if (type === 'star') {
+                item.classList.add('star');
+                item.textContent = starEmoji;
+            } else if (score >= 50 && rand < 0.2) {
+                item.classList.add('bomb');
+                item.textContent = bombEmoji;
+            } else {
+                const fruit = fruitData[Math.floor(Math.random() * fruitData.length)];
+                item.classList.add('fruit');
+                item.textContent = fruit.emoji;
+                item.dataset.score = fruit.score;
+            }
+            
+            // Position item
+            item.style.left = Math.random() * (gameArea.clientWidth - 60) + 'px';
+            item.style.top = '-60px';
+            item.style.opacity = '0';
+            
+            // Add to game area
+            gameArea.appendChild(item);
+            items.push(item);
+            
+            // Fade in animation
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transition = 'opacity 0.3s ease';
+            }, 10);
+            
+            // Touch events for fruits (slice on tap)
+            if (item.classList.contains('fruit')) {
+                let touchStartTime;
+                
+                item.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    touchStartTime = Date.now();
+                });
+                
+                item.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    const touchDuration = Date.now() - touchStartTime;
+                    if (touchDuration < 300) {
+                        sliceFruit(item);
+                    }
+                });
+                
+                // Mouse events for desktop
+                item.addEventListener('click', () => {
+                    sliceFruit(item);
+                });
+            }
+            
+            // Movement interval
+            const fallInterval = setInterval(() => {
+                if (!isGameRunning) {
+                    clearInterval(fallInterval);
+                    return;
+                }
+                
+                const top = parseInt(item.style.top);
+                item.style.top = (top + fallSpeed) + 'px';
+                
+                // Remove if out of bounds
+                if (top > gameArea.clientHeight) {
+                    clearInterval(fallInterval);
+                    if (gameArea.contains(item)) {
+                        gameArea.removeChild(item);
+                        items.splice(items.indexOf(item), 1);
+                        
+                        if (item.classList.contains('fruit')) {
+                            misses++;
+                            updateMissesDisplay();
+                            
+                            if (misses >= 5) {
+                                endGame();
+                            }
+                        }
+                    }
+                }
+            }, 50);
+            
+            // Click events for bombs and stars
+            item.addEventListener('click', () => {
+                if (!item.classList.contains('fruit')) {
+                    clearInterval(fallInterval);
+                    if (gameArea.contains(item)) {
+                        gameArea.removeChild(item);
+                        items.splice(items.indexOf(item), 1);
+                        
+                        if (item.classList.contains('bomb')) {
+                            endGame();
+                        } else if (item.classList.contains('star')) {
+                            score += starScore;
+                            updateScoreDisplay();
+                            checkStarMilestone();
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Check if we reached a star milestone
+        function checkStarMilestone() {
+            if (currentMilestoneIndex < starMilestones.length && score >= starMilestones[currentMilestoneIndex]) {
+                createItem('star');
+                currentMilestoneIndex++;
+            }
+        }
+        
+        // Slice a fruit when tapped/clicked
+        function sliceFruit(fruit) {
+            // Visual feedback
+            fruit.style.transform = 'scale(1.2)';
+            fruit.style.opacity = '0.7';
+            
+            // Haptic feedback on mobile
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            // Create slice effect
+            const leftSlice = document.createElement('div');
+            leftSlice.classList.add('slice');
+            leftSlice.textContent = fruit.textContent;
+            leftSlice.style.left = fruit.style.left;
+            leftSlice.style.top = fruit.style.top;
+            
+            const rightSlice = document.createElement('div');
+            rightSlice.classList.add('slice');
+            rightSlice.textContent = fruit.textContent;
+            rightSlice.style.left = (parseInt(fruit.style.left) + 30) + 'px';
+            rightSlice.style.top = fruit.style.top;
+            
+            gameArea.appendChild(leftSlice);
+            gameArea.appendChild(rightSlice);
+            
+            // Animate slices falling apart
+            let leftDrift = -2;
+            let rightDrift = 2;
+            const sliceFallInterval = setInterval(() => {
+                const leftTop = parseInt(leftSlice.style.top);
+                const rightTop = parseInt(rightSlice.style.top);
+                
+                leftSlice.style.top = (leftTop + fallSpeed) + 'px';
+                rightSlice.style.top = (rightTop + fallSpeed) + 'px';
+                leftSlice.style.left = (parseInt(leftSlice.style.left) + leftDrift) + 'px';
+                rightSlice.style.left = (parseInt(rightSlice.style.left) + rightDrift) + 'px';
+                
+                // Remove slices when off screen
+                if (leftTop > gameArea.clientHeight || rightTop > gameArea.clientHeight) {
+                    clearInterval(sliceFallInterval);
+                    if (gameArea.contains(leftSlice)) gameArea.removeChild(leftSlice);
+                    if (gameArea.contains(rightSlice)) gameArea.removeChild(rightSlice);
+                }
+            }, 50);
+            
+            // Update score
+            score += parseInt(fruit.dataset.score);
+            updateScoreDisplay();
+            checkStarMilestone();
+            
+            // Remove original fruit
+            if (gameArea.contains(fruit)) {
+                gameArea.removeChild(fruit);
+                items.splice(items.indexOf(fruit), 1);
+            }
+        }
+        
+        // Update score display
+        function updateScoreDisplay() {
+            scoreEl.textContent = score;
+            scoreEl.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                scoreEl.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        // Update misses display
+        function updateMissesDisplay() {
+            missesEl.textContent = `${misses}/5`;
+            missesEl.style.color = misses >= 3 ? 'var(--danger)' : 'var(--text)';
+        }
+        
+        // Start the game
+        function startGame() {
+            // Reset game state
+            score = 0;
+            misses = 0;
+            fallSpeed = 5;
+            currentMilestoneIndex = 0;
+            isGameRunning = true;
+            
+            // Clear any existing items
+            items.forEach(item => {
+                if (gameArea.contains(item)) gameArea.removeChild(item);
+            });
+            items = [];
+            
+            // Update UI
+            updateScoreDisplay();
+            updateMissesDisplay();
+            startBtn.style.display = 'none';
+            restartModal.style.display = 'none';
+            
+            // Start game loops
+            gameInterval = setInterval(() => {
+                if (isGameRunning) createItem('random');
+            }, 1000);
+            
+            speedInterval = setInterval(() => {
+                if (isGameRunning) fallSpeed += 1;
+            }, 10000);
+        }
+        
+        // End the game
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            clearInterval(speedInterval);
+            
+            // Remove all items
+            items.forEach(item => {
+                if (gameArea.contains(item)) gameArea.removeChild(item);
+            });
+            items = [];
+            
+            // Show ad (placeholder)
+            showInterstitialAd();
+            
+            // Check for high score
+            const isNewHighScore = score > highScore;
+            if (isNewHighScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+                highScoreEl.textContent = highScore;
+                emojiMessageEl.textContent = '🎉 New High Score!';
+            } else {
+                emojiMessageEl.textContent = score > highScore * 0.7 ? '😊 Great Job!' : '😐 Try Again!';
+            }
+            
+            // Show game over modal
+            finalScoreEl.textContent = `Final Score: ${score}`;
+            restartModal.style.display = 'block';
+            startBtn.style.display = 'flex';
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        homeBtn.addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+        
+        // Ad functions (placeholder)
+        function showInterstitialAd() {
+            // Ad implementation would go here
+            console.log('Interstitial ad would show here');
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            // Any initialization code would go here
+        });
+    </script>
+</body>
+</html>
